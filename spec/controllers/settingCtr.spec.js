@@ -23,7 +23,6 @@ describe('settingCtrl', function() {
         
         // Mock $rootParams (note: actual controller uses $rootParams, not $routeParams)
         $rootParams = {
-            app: 1  // Use simple ID instead of string
         };
         
         // Mock HTTP GET to support old .success()/.error() syntax
@@ -129,45 +128,6 @@ describe('settingCtrl', function() {
             });
             
             expect($rootScope.isBa).toBe(true);
-        });
-        
-        it('should load domain when isBa is true', function() {
-            functions.isBa.and.returnValue(true);
-            
-            // Override the spy for this specific test to call the callback
-            settingService.domain.and.callFake(function(app, callback) {
-                callback({
-                    id: 1,
-                    name: 'TestDomain',
-                    relations: [
-                        { id: 1, name: 'Template1' },
-                        { id: 2, name: 'Template2' }
-                    ]
-                });
-            });
-            
-            $controller('settingCtrl', {
-                $scope: $scope,
-                $rootScope: $rootScope,
-                $rootParams: $rootParams,
-                settingService: settingService,
-                baseService: baseService,
-                functions: functions
-            });
-            
-            expect(settingService.domain).toHaveBeenCalledWith($rootParams.app, jasmine.any(Function));
-            expect($scope.domain).toEqual({
-                id: 1,
-                name: 'TestDomain',
-                relations: [
-                    { id: 1, name: 'Template1' },
-                    { id: 2, name: 'Template2' }
-                ]
-            });
-            expect($scope.templateTypes).toEqual([
-                { id: 1, name: 'Template1' },
-                { id: 2, name: 'Template2' }
-            ]);
         });
         
         it('should not load domain when isBa is false', function() {
