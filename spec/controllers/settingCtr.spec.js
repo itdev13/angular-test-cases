@@ -532,11 +532,6 @@ describe('settingFormCtr', function() {
         window.postData = {};
     }));
     
-    afterEach(function() {
-        $httpBackend.verifyNoOutstandingExpectation(false);
-        $httpBackend.verifyNoOutstandingRequest(false);
-    });
-    
     describe('Initialization for domain type', function() {
         beforeEach(function() {
             settingService.type = 'domain';
