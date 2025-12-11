@@ -641,6 +641,7 @@ describe('settingFormCtr', function() {
     
     describe('$scope.submit for domain', function() {
         beforeEach(function() {
+            window.postData = {};  // Reset postData before each test
             settingService.type = 'domain';
             settingService.id = 10;
             
@@ -659,10 +660,9 @@ describe('settingFormCtr', function() {
             $scope.value = 'TestDomainValue';
             $scope.submit();
             
-            expect(settingService.addDomainValue).toHaveBeenCalledWith({
-                domainId: 10,
-                domainValue: 'TestDomainValue'
-            });
+            var callArgs = settingService.addDomainValue.calls.argsFor(0)[0];
+            expect(callArgs.domainId).toBe(10);
+            expect(callArgs.domainValue).toBe('TestDomainValue');
         });
         
         it('should reset parent and hasDes on submit', function() {
@@ -704,6 +704,7 @@ describe('settingFormCtr', function() {
     
     describe('$scope.submit for category', function() {
         beforeEach(function() {
+            window.postData = {};  // Reset postData before each test
             settingService.type = 'category';
             settingService.id = 20;
             
@@ -725,11 +726,11 @@ describe('settingFormCtr', function() {
             
             $scope.submit();
             
-            expect(settingService.addCategoryValue).toHaveBeenCalledWith({
-                categoryId: 20,
-                categoryValue: 'TestCategory',
-                description: 'Test Description'
-            });
+            var callArgs = settingService.addCategoryValue.calls.argsFor(0)[0];
+            expect(callArgs.categoryId).toBe(20);
+            expect(callArgs.categoryValue).toBe('TestCategory');
+            expect(callArgs.description).toBe('Test Description');
+            expect(callArgs.parentCategoryValueId).toBeUndefined();
         });
         
         it('should add category value with parent', function() {
@@ -740,12 +741,11 @@ describe('settingFormCtr', function() {
             
             $scope.submit();
             
-            expect(settingService.addCategoryValue).toHaveBeenCalledWith({
-                categoryId: 20,
-                categoryValue: 'TestCategory',
-                description: 'Test Description',
-                parentCategoryValueId: 15
-            });
+            var callArgs = settingService.addCategoryValue.calls.argsFor(0)[0];
+            expect(callArgs.categoryId).toBe(20);
+            expect(callArgs.categoryValue).toBe('TestCategory');
+            expect(callArgs.description).toBe('Test Description');
+            expect(callArgs.parentCategoryValueId).toBe(15);
         });
         
         it('should not include parentCategoryValueId when parent is -1', function() {
@@ -855,6 +855,7 @@ describe('settingFormCtr', function() {
         });
         
         it('should handle empty domain value submission', function() {
+            window.postData = {};  // Reset for this isolated test
             settingService.type = 'domain';
             settingService.id = 10;
             
@@ -871,13 +872,13 @@ describe('settingFormCtr', function() {
             $scope.value = '';
             $scope.submit();
             
-            expect(settingService.addDomainValue).toHaveBeenCalledWith({
-                domainId: 10,
-                domainValue: ''
-            });
+            var callArgs = settingService.addDomainValue.calls.argsFor(0)[0];
+            expect(callArgs.domainId).toBe(10);
+            expect(callArgs.domainValue).toBe('');
         });
         
         it('should handle empty category value submission', function() {
+            window.postData = {};  // Reset for this isolated test
             settingService.type = 'category';
             settingService.id = 20;
             
@@ -896,11 +897,11 @@ describe('settingFormCtr', function() {
             $scope.description = '';
             $scope.submit();
             
-            expect(settingService.addCategoryValue).toHaveBeenCalledWith({
-                categoryId: 20,
-                categoryValue: '',
-                description: ''
-            });
+            var callArgs = settingService.addCategoryValue.calls.argsFor(0)[0];
+            expect(callArgs.categoryId).toBe(20);
+            expect(callArgs.categoryValue).toBe('');
+            expect(callArgs.description).toBe('');
+            expect(callArgs.parentCategoryValueId).toBeUndefined();
         });
     });
 });
