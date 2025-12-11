@@ -537,12 +537,10 @@ describe('settingFormCtr', function() {
             settingService.type = 'domain';
             settingService.parentId = -1;
             
-            // Ensure pparent is set
-            if (!$scope.pparent) {
-                $scope.pparent = {
-                    cancel: jasmine.createSpy('cancel')
-                };
-            }
+            // Reset pparent spy
+            $scope.pparent = {
+                cancel: jasmine.createSpy('cancel')
+            };
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -571,12 +569,10 @@ describe('settingFormCtr', function() {
             settingService.type = 'category';
             settingService.parentId = 5;
             
-            // Ensure pparent is set
-            if (!$scope.pparent) {
-                $scope.pparent = {
-                    cancel: jasmine.createSpy('cancel')
-                };
-            }
+            // Reset pparent spy
+            $scope.pparent = {
+                cancel: jasmine.createSpy('cancel')
+            };
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -614,12 +610,10 @@ describe('settingFormCtr', function() {
             settingService.type = 'category';
             settingService.parentId = -1;
             
-            // Ensure pparent is set
-            if (!$scope.pparent) {
-                $scope.pparent = {
-                    cancel: jasmine.createSpy('cancel')
-                };
-            }
+            // Reset pparent spy
+            $scope.pparent = {
+                cancel: jasmine.createSpy('cancel')
+            };
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -645,11 +639,9 @@ describe('settingFormCtr', function() {
             settingService.parentId = -1;
             
             // Ensure pparent is set
-            if (!$scope.pparent) {
-                $scope.pparent = {
-                    cancel: jasmine.createSpy('cancel')
-                };
-            }
+            $scope.pparent = {
+                cancel: jasmine.createSpy('cancel')
+            };
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -673,12 +665,10 @@ describe('settingFormCtr', function() {
             settingService.type = 'domain';
             settingService.id = 10;
             
-            // Ensure pparent is set before calling controller
-            if (!$scope.pparent) {
-                $scope.pparent = {
-                    cancel: jasmine.createSpy('cancel')
-                };
-            }
+            // Reset pparent spy for each test
+            $scope.pparent = {
+                cancel: jasmine.createSpy('cancel')
+            };
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -743,12 +733,10 @@ describe('settingFormCtr', function() {
             settingService.type = 'category';
             settingService.id = 20;
             
-            // Ensure pparent is set before calling controller
-            if (!$scope.pparent) {
-                $scope.pparent = {
-                    cancel: jasmine.createSpy('cancel')
-                };
-            }
+            // Reset pparent spy for each test
+            $scope.pparent = {
+                cancel: jasmine.createSpy('cancel')
+            };
             
             $controller('settingFormCtr', {
                 $scope: $scope,
