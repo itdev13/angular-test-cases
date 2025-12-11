@@ -1,4 +1,4 @@
-describe('settingForeCtr', function() {
+describe('settingCtrl', function() {
     var $scope, $rootScope, $controller, $q;
     var settingService, baseService, functions, $rootParams;
     
@@ -56,7 +56,7 @@ describe('settingForeCtr', function() {
     
     describe('Controller initialization', function() {
         it('should initialize the controller and set basic properties', function() {
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -71,7 +71,7 @@ describe('settingForeCtr', function() {
         });
         
         it('should call functions.isBa with app', function() {
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -86,7 +86,7 @@ describe('settingForeCtr', function() {
         it('should set rootScope.isBa based on functions.isBa', function() {
             functions.isBa.and.returnValue(true);
             
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -112,7 +112,7 @@ describe('settingForeCtr', function() {
                 });
             });
             
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -139,7 +139,7 @@ describe('settingForeCtr', function() {
         it('should not load domain when isBa is false', function() {
             functions.isBa.and.returnValue(false);
             
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -156,7 +156,7 @@ describe('settingForeCtr', function() {
     
     describe('$scope.load function', function() {
         beforeEach(function() {
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -248,7 +248,7 @@ describe('settingForeCtr', function() {
     
     describe('$scope.setTitle function', function() {
         beforeEach(function() {
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -274,7 +274,7 @@ describe('settingForeCtr', function() {
     
     describe('$scope.deleteDomainValue function', function() {
         beforeEach(function() {
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -348,7 +348,7 @@ describe('settingForeCtr', function() {
     
     describe('$scope.deleteCatValue function', function() {
         beforeEach(function() {
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,
@@ -450,7 +450,7 @@ describe('settingForeCtr', function() {
     
     describe('Event listeners', function() {
         beforeEach(function() {
-            $controller('settingForeCtr', {
+            $controller('settingCtrl', {
                 $scope: $scope,
                 $rootScope: $rootScope,
                 $rootParams: $rootParams,

@@ -1,4 +1,4 @@
-ncApp.controller("settingForeCtr", ["$scope", "settingService", "$rootScope", "$rootParams", "baseService", "functions",
+ncApp.controller("settingCtrl", ["$scope", "settingService", "$rootScope", "$rootParams", "baseService", "functions",
     function ($scope, settingService, $rootScope, $rootParams, baseService, functions) {
         $rootScope.app = $rootParams.app;
         $rootScope.path = "setting";
