@@ -1,45 +1,52 @@
 describe('settingCtrl', function() {
-    var $scope, $rootScope, $controller, $q;
+    var $scope, $rootScope, $controller, $q, $httpBackend;
     var settingService, baseService, functions, $rootParams;
     
     beforeEach(module('ncApp'));
     
-    beforeEach(inject(function(_$controller_, _$rootScope_, _$q_) {
+    // Mock $modal before injecting services
+    beforeEach(module(function($provide) {
+        $provide.value('$modal', {
+            open: jasmine.createSpy('open')
+        });
+    }));
+    
+    beforeEach(inject(function(_$controller_, _$rootScope_, _$q_, _$httpBackend_, _baseService_, _settingService_, _functions_) {
         $rootScope = _$rootScope_;
         $scope = $rootScope.$new();
         $controller = _$controller_;
         $q = _$q_;
+        $httpBackend = _$httpBackend_;
+        baseService = _baseService_;
+        settingService = _settingService_;
+        functions = _functions_;
         
         // Mock $rootParams (note: actual controller uses $rootParams, not $routeParams)
         $rootParams = {
             app: 'testApp'
         };
         
-        // Mock settingService
-        settingService = {
-            type: '',
-            id: null,
-            parentId: null,
-            domain: jasmine.createSpy('domain'),
-            deleteCatValue: jasmine.createSpy('deleteCatValue').and.returnValue($q.when('Success')),
-            deleteDomainValue: jasmine.createSpy('deleteDomainValue').and.returnValue($q.when('Success'))
-        };
+        // Mock HTTP requests
+        $httpBackend.whenGET(/apis\/domainApp/).respond({ id: 1, relations: [] });
+        $httpBackend.whenGET(/apis\/domain/).respond({ values: [] });
+        $httpBackend.whenGET(/apis\/category/).respond([]);
+        $httpBackend.whenPOST(/apis\/domain/).respond('Success');
+        $httpBackend.whenPOST(/apis\/category/).respond('Success');
         
-        // Mock baseService
-        baseService = {
-            domainValues: jasmine.createSpy('domainValues').and.returnValue($q.when({
-                values: [{ id: 1, value: 'DomainValue1' }]
-            })),
-            categoryValues: jasmine.createSpy('categoryValues').and.returnValue($q.when([
-                { id: 1, value: 'CategoryValue1' }
-            ]))
-        };
+        // Spy on service methods
+        spyOn(settingService, 'domainApp').and.callThrough();
+        spyOn(settingService, 'deleteCatValue').and.returnValue($q.when('Success'));
+        spyOn(settingService, 'deleteDomainValue').and.returnValue($q.when('Success'));
         
-        // Mock functions service
-        functions = {
-            isBa: jasmine.createSpy('isBa').and.returnValue(true),
-            alert: jasmine.createSpy('alert')
-        };
+        spyOn(baseService, 'domainValues').and.returnValue($q.when({
+            values: [{ id: 1, value: 'DomainValue1' }]
+        }));
+        spyOn(baseService, 'categoryValues').and.returnValue($q.when([
+            { id: 1, value: 'CategoryValue1' }
+        ]));
+        
+        spyOn(functions, 'isBa').and.returnValue(true);
+        spyOn(functions, 'alert');
         
         // Mock jQuery
         window.$ = jasmine.createSpy('$').and.callFake(function(selector) {
@@ -101,7 +108,7 @@ describe('settingCtrl', function() {
         it('should load domain when isBa is true', function() {
             functions.isBa.and.returnValue(true);
             
-            settingService.domain.and.callFake(function(app, callback) {
+            settingService.domainApp.and.callFake(function(app, callback) {
                 callback({
                     id: 1,
                     name: 'TestDomain',
@@ -121,7 +128,7 @@ describe('settingCtrl', function() {
                 functions: functions
             });
             
-            expect(settingService.domain).toHaveBeenCalledWith('testApp', jasmine.any(Function));
+            expect(settingService.domainApp).toHaveBeenCalledWith('testApp', jasmine.any(Function));
             expect($scope.domain).toEqual({
                 id: 1,
                 name: 'TestDomain',
@@ -148,7 +155,7 @@ describe('settingCtrl', function() {
                 functions: functions
             });
             
-            expect(settingService.domain).not.toHaveBeenCalled();
+            expect(settingService.domainApp).not.toHaveBeenCalled();
             expect($scope.domain).toBeUndefined();
             expect($scope.templateTypes).toBeUndefined();
         });
@@ -176,39 +183,27 @@ describe('settingCtrl', function() {
             expect(settingService.id).toBe(123);
         });
         
-        it('should load domain values when type is domain', function(done) {
+        it('should load domain values when type is domain', function() {
             $scope.load('domain', 1, '.target-element', null);
-            
-            setTimeout(function() {
-                try {
-                    $rootScope.$apply();
-                } catch(e) {}
+            $rootScope.$digest();
                 
-                expect($scope.type).toBe('domain');
-                expect(settingService.type).toBe('domain');
-                expect(baseService.domainValues).toHaveBeenCalledWith(1, false);
-                expect($scope.domainValues).toEqual([{ id: 1, value: 'DomainValue1' }]);
-                expect($scope.loading).toBe(0);
-                done();
-            }, 10);
+            expect($scope.type).toBe('domain');
+            expect(settingService.type).toBe('domain');
+            expect(baseService.domainValues).toHaveBeenCalledWith(1, false);
+            expect($scope.domainValues).toEqual([{ id: 1, value: 'DomainValue1' }]);
+            expect($scope.loading).toBe(0);
         });
         
-        it('should load category values when type is category', function(done) {
+        it('should load category values when type is category', function() {
             $scope.load('category', 2, '.target-element', 5);
-            
-            setTimeout(function() {
-                try {
-                    $rootScope.$apply();
-                } catch(e) {}
+            $rootScope.$digest();
                 
-                expect($scope.type).toBe('category');
-                expect(settingService.type).toBe('category');
-                expect(settingService.parentId).toBe(5);
-                expect(baseService.categoryValues).toHaveBeenCalledWith(2, false);
-                expect($scope.categoryValues).toEqual([{ id: 1, value: 'CategoryValue1' }]);
-                expect($scope.loading).toBe(0);
-                done();
-            }, 10);
+            expect($scope.type).toBe('category');
+            expect(settingService.type).toBe('category');
+            expect(settingService.parentId).toBe(5);
+            expect(baseService.categoryValues).toHaveBeenCalledWith(2, false);
+            expect($scope.categoryValues).toEqual([{ id: 1, value: 'CategoryValue1' }]);
+            expect($scope.loading).toBe(0);
         });
         
         it('should update UI classes using jQuery', function() {
@@ -300,22 +295,16 @@ describe('settingCtrl', function() {
             expect(window.confirm).toHaveBeenCalledWith("Are you sure you want to delete 'Domain1'?");
         });
         
-        it('should delete domain value when user confirms', function(done) {
+        it('should delete domain value when user confirms', function() {
             window.confirm.and.returnValue(true);
             settingService.deleteDomainValue.and.returnValue($q.when('Success'));
             
             $scope.deleteDomainValue(1, 'Domain1', 0);
-            
-            setTimeout(function() {
-                try {
-                    $rootScope.$apply();
-                } catch(e) {}
+            $rootScope.$digest();
                 
-                expect(settingService.deleteDomainValue).toHaveBeenCalledWith(1);
-                expect($scope.domainValues.length).toBe(2);
-                expect($scope.domainValues[0]).toEqual({ id: 2, name: 'Domain2' });
-                done();
-            }, 10);
+            expect(settingService.deleteDomainValue).toHaveBeenCalledWith(1);
+            expect($scope.domainValues.length).toBe(2);
+            expect($scope.domainValues[0]).toEqual({ id: 2, name: 'Domain2' });
         });
         
         it('should not delete domain value when user cancels', function() {
@@ -327,22 +316,16 @@ describe('settingCtrl', function() {
             expect($scope.domainValues.length).toBe(3);
         });
         
-        it('should delete correct item by index', function(done) {
+        it('should delete correct item by index', function() {
             window.confirm.and.returnValue(true);
             settingService.deleteDomainValue.and.returnValue($q.when('Success'));
             
             $scope.deleteDomainValue(2, 'Domain2', 1);
-            
-            setTimeout(function() {
-                try {
-                    $rootScope.$apply();
-                } catch(e) {}
+            $rootScope.$digest();
                 
-                expect($scope.domainValues.length).toBe(2);
-                expect($scope.domainValues[0]).toEqual({ id: 1, name: 'Domain1' });
-                expect($scope.domainValues[1]).toEqual({ id: 3, name: 'Domain3' });
-                done();
-            }, 10);
+            expect($scope.domainValues.length).toBe(2);
+            expect($scope.domainValues[0]).toEqual({ id: 1, name: 'Domain1' });
+            expect($scope.domainValues[1]).toEqual({ id: 3, name: 'Domain3' });
         });
     });
     
@@ -379,42 +362,30 @@ describe('settingCtrl', function() {
             expect(typeof $rootScope.confirm.no).toBe('function');
         });
         
-        it('should delete category value on yes when response is Success', function(done) {
+        it('should delete category value on yes when response is Success', function() {
             settingService.deleteCatValue.and.returnValue($q.when('Success'));
             
             $scope.deleteCatValue(1, 'Cat1', 0);
             $rootScope.confirm.yes();
-            
-            setTimeout(function() {
-                try {
-                    $rootScope.$apply();
-                } catch(e) {}
+            $rootScope.$digest();
                 
-                expect($rootScope.showConfirm).toBe(false);
-                expect(settingService.deleteCatValue).toHaveBeenCalledWith(1);
-                expect($scope.categoryValues.length).toBe(2);
-                expect($scope.categoryValues[0]).toEqual({ id: 2, name: 'Cat2' });
-                done();
-            }, 10);
+            expect($rootScope.showConfirm).toBe(false);
+            expect(settingService.deleteCatValue).toHaveBeenCalledWith(1);
+            expect($scope.categoryValues.length).toBe(2);
+            expect($scope.categoryValues[0]).toEqual({ id: 2, name: 'Cat2' });
         });
         
-        it('should show danger alert when response is not Success', function(done) {
+        it('should show danger alert when response is not Success', function() {
             settingService.deleteCatValue.and.returnValue($q.when('Error: Cannot delete category'));
             
             $scope.deleteCatValue(1, 'Cat1', 0);
             $rootScope.confirm.yes();
-            
-            setTimeout(function() {
-                try {
-                    $rootScope.$apply();
-                } catch(e) {}
+            $rootScope.$digest();
                 
-                expect($rootScope.showConfirm).toBe(false);
-                expect(settingService.deleteCatValue).toHaveBeenCalledWith(1);
-                expect($scope.categoryValues.length).toBe(3); // Not deleted
-                expect(functions.alert).toHaveBeenCalledWith('danger', 'Error: Cannot delete category');
-                done();
-            }, 10);
+            expect($rootScope.showConfirm).toBe(false);
+            expect(settingService.deleteCatValue).toHaveBeenCalledWith(1);
+            expect($scope.categoryValues.length).toBe(3); // Not deleted
+            expect(functions.alert).toHaveBeenCalledWith('danger', 'Error: Cannot delete category');
         });
         
         it('should close dialog on no without deleting', function() {
@@ -429,22 +400,16 @@ describe('settingCtrl', function() {
             expect($scope.categoryValues.length).toBe(3);
         });
         
-        it('should delete correct item by index', function(done) {
+        it('should delete correct item by index', function() {
             settingService.deleteCatValue.and.returnValue($q.when('Success'));
             
             $scope.deleteCatValue(2, 'Cat2', 1);
             $rootScope.confirm.yes();
-            
-            setTimeout(function() {
-                try {
-                    $rootScope.$apply();
-                } catch(e) {}
+            $rootScope.$digest();
                 
-                expect($scope.categoryValues.length).toBe(2);
-                expect($scope.categoryValues[0]).toEqual({ id: 1, name: 'Cat1' });
-                expect($scope.categoryValues[1]).toEqual({ id: 3, name: 'Cat3' });
-                done();
-            }, 10);
+            expect($scope.categoryValues.length).toBe(2);
+            expect($scope.categoryValues[0]).toEqual({ id: 1, name: 'Cat1' });
+            expect($scope.categoryValues[1]).toEqual({ id: 3, name: 'Cat3' });
         });
     });
     
@@ -511,12 +476,19 @@ describe('settingCtrl', function() {
 });
 
 describe('settingFormCtr', function() {
-    var $scope, $rootScope, $controller, $q;
+    var $scope, $rootScope, $controller, $q, $httpBackend;
     var settingService, baseService, functions;
     
     beforeEach(module('ncApp'));
     
-    beforeEach(inject(function(_$controller_, _$rootScope_, _$q_) {
+    // Mock $modal before injecting services
+    beforeEach(module(function($provide) {
+        $provide.value('$modal', {
+            open: jasmine.createSpy('open')
+        });
+    }));
+    
+    beforeEach(inject(function(_$controller_, _$rootScope_, _$q_, _$httpBackend_, _settingService_, _baseService_, _functions_) {
         $rootScope = _$rootScope_;
         $scope = $rootScope.$new();
         $scope.pparent = {
@@ -524,40 +496,38 @@ describe('settingFormCtr', function() {
         };
         $controller = _$controller_;
         $q = _$q_;
+        $httpBackend = _$httpBackend_;
+        settingService = _settingService_;
+        baseService = _baseService_;
+        functions = _functions_;
         
-        // Mock settingService
-        settingService = {
-            type: 'domain',
-            id: 1,
-            parentId: -1,
-            addDomainValue: jasmine.createSpy('addDomainValue').and.returnValue({
-                success: function(callback) {
-                    callback({ domainValue: 'NewDomain' });
-                    return this;
-                }
-            }),
-            addCategoryValue: jasmine.createSpy('addCategoryValue').and.returnValue({
-                success: function(callback) {
-                    callback({ categoryValue: 'NewCategory' });
-                    return this;
-                }
-            })
-        };
+        // Mock HTTP requests
+        $httpBackend.whenGET(/apis\//).respond({});
+        $httpBackend.whenPOST(/apis\/domain/).respond({ data: { domainValue: 'NewDomain' } });
+        $httpBackend.whenPOST(/apis\/category/).respond({ data: { categoryValue: 'NewCategory' } });
         
-        // Mock baseService
-        baseService = {
-            categoryValues: jasmine.createSpy('categoryValues').and.returnValue($q.when([
-                { id: 1, value: 'ParentCat1' },
-                { id: 2, value: 'ParentCat2' }
-            ]))
-        };
+        // Spy on service methods
+        spyOn(settingService, 'addDomainValue').and.returnValue({
+            success: function(callback) {
+                callback({ domainValue: 'NewDomain' });
+                return this;
+            }
+        });
+        spyOn(settingService, 'addCategoryValue').and.returnValue({
+            success: function(callback) {
+                callback({ categoryValue: 'NewCategory' });
+                return this;
+            }
+        });
         
-        // Mock functions service
-        functions = {
-            alert: jasmine.createSpy('alert').and.callFake(function(type, message, callback) {
-                if (callback) callback();
-            })
-        };
+        spyOn(baseService, 'categoryValues').and.returnValue($q.when([
+            { id: 1, value: 'ParentCat1' },
+            { id: 2, value: 'ParentCat2' }
+        ]));
+        
+        spyOn(functions, 'alert').and.callFake(function(type, message, callback) {
+            if (callback) callback();
+        });
         
         // Set up global postData
         window.postData = {};
@@ -612,18 +582,13 @@ describe('settingFormCtr', function() {
             expect(baseService.categoryValues).toHaveBeenCalledWith(5, false);
         });
         
-        it('should set parentCatValues after promise resolves', function(done) {
-            setTimeout(function() {
-                try {
-                    $rootScope.$apply();
-                } catch(e) {}
+        it('should set parentCatValues after promise resolves', function() {
+            $rootScope.$digest();
                 
-                expect($scope.parentCatValues).toEqual([
-                    { id: 1, value: 'ParentCat1' },
-                    { id: 2, value: 'ParentCat2' }
-                ]);
-                done();
-            }, 10);
+            expect($scope.parentCatValues).toEqual([
+                { id: 1, value: 'ParentCat1' },
+                { id: 2, value: 'ParentCat2' }
+            ]);
         });
     });
     

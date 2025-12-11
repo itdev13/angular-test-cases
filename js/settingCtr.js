@@ -6,7 +6,7 @@ ncApp.controller("settingCtrl", ["$scope", "settingService", "$rootScope", "$roo
         $rootScope.header = 'templates/header.html';
 
         if ($rootScope.isBa) {
-            settingService.domain($rootScope.app, function (d) {
+            settingService.domainApp($rootScope.app, function (d) {
                 $scope.domain = d;
                 $scope.templateTypes = d.relations;
             });
