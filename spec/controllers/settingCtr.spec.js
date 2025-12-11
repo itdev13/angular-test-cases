@@ -660,10 +660,18 @@ describe('settingFormCtr', function() {
     });
     
     describe('$scope.submit for domain', function() {
+        var cancelSpy;
+        
         beforeEach(function() {
             window.postData = {};  // Reset postData before each test
             settingService.type = 'domain';
             settingService.id = 10;
+            
+            // Create spy BEFORE controller
+            cancelSpy = jasmine.createSpy('cancel');
+            $scope.pparent = {
+                cancel: cancelSpy
+            };
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -672,11 +680,6 @@ describe('settingFormCtr', function() {
                 baseService: baseService,
                 functions: functions
             });
-            
-            // Set pparent AFTER controller instantiation to ensure it persists
-            $scope.pparent = {
-                cancel: jasmine.createSpy('cancel')
-            };
             
             spyOn($rootScope, '$broadcast');
         });
@@ -710,16 +713,10 @@ describe('settingFormCtr', function() {
         });
         
         it('should cancel parent dialog after alert', function() {
-            // Verify pparent exists and reset it
-            expect($scope.pparent).toBeDefined();
-            $scope.pparent.cancel.calls.reset();
-            
             $scope.value = 'TestDomainValue';
             $scope.submit();
             
-            expect($scope.pparent).toBeDefined();
-            expect($scope.pparent.cancel).toBeDefined();
-            expect($scope.pparent.cancel).toHaveBeenCalled();
+            expect(cancelSpy).toHaveBeenCalled();
         });
         
         it('should broadcast addDomainValueEvent', function() {
@@ -734,10 +731,18 @@ describe('settingFormCtr', function() {
     });
     
     describe('$scope.submit for category', function() {
+        var cancelSpy;
+        
         beforeEach(function() {
             window.postData = {};  // Reset postData before each test
             settingService.type = 'category';
             settingService.id = 20;
+            
+            // Create spy BEFORE controller
+            cancelSpy = jasmine.createSpy('cancel');
+            $scope.pparent = {
+                cancel: cancelSpy
+            };
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -746,11 +751,6 @@ describe('settingFormCtr', function() {
                 baseService: baseService,
                 functions: functions
             });
-            
-            // Set pparent AFTER controller instantiation to ensure it persists
-            $scope.pparent = {
-                cancel: jasmine.createSpy('cancel')
-            };
             
             spyOn($rootScope, '$broadcast');
         });
@@ -809,19 +809,13 @@ describe('settingFormCtr', function() {
         });
         
         it('should cancel parent dialog after alert', function() {
-            // Verify pparent exists and reset it
-            expect($scope.pparent).toBeDefined();
-            $scope.pparent.cancel.calls.reset();
-            
             $scope.parent = -1;
             $scope.value = 'TestCategory';
             $scope.description = 'Test Description';
             
             $scope.submit();
             
-            expect($scope.pparent).toBeDefined();
-            expect($scope.pparent.cancel).toBeDefined();
-            expect($scope.pparent.cancel).toHaveBeenCalled();
+            expect(cancelSpy).toHaveBeenCalled();
         });
         
         it('should broadcast addCatValueEvent', function() {
