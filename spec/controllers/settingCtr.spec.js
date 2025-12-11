@@ -45,6 +45,7 @@ describe('settingCtrl', function() {
         });
         
         // Mock HTTP requests
+        $httpBackend.whenGET(/templates\//).respond('');
         $httpBackend.whenGET(/apis\/domain/).respond({ id: 1, relations: [] });
         $httpBackend.whenGET(/apis\/category/).respond([]);
         $httpBackend.whenPOST(/apis\/domain/).respond('Success');
@@ -517,6 +518,7 @@ describe('settingFormCtr', function() {
         functions = _functions_;
         
         // Mock HTTP requests
+        $httpBackend.whenGET(/templates\//).respond('');
         $httpBackend.whenGET(/apis\//).respond({});
         $httpBackend.whenPOST(/apis\/domain/).respond({ data: { domainValue: 'NewDomain' } });
         $httpBackend.whenPOST(/apis\/category/).respond({ data: { categoryValue: 'NewCategory' } });
