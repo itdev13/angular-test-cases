@@ -710,9 +710,15 @@ describe('settingFormCtr', function() {
         });
         
         it('should cancel parent dialog after alert', function() {
+            // Verify pparent exists and reset it
+            expect($scope.pparent).toBeDefined();
+            $scope.pparent.cancel.calls.reset();
+            
             $scope.value = 'TestDomainValue';
             $scope.submit();
             
+            expect($scope.pparent).toBeDefined();
+            expect($scope.pparent.cancel).toBeDefined();
             expect($scope.pparent.cancel).toHaveBeenCalled();
         });
         
@@ -803,12 +809,18 @@ describe('settingFormCtr', function() {
         });
         
         it('should cancel parent dialog after alert', function() {
+            // Verify pparent exists and reset it
+            expect($scope.pparent).toBeDefined();
+            $scope.pparent.cancel.calls.reset();
+            
             $scope.parent = -1;
             $scope.value = 'TestCategory';
             $scope.description = 'Test Description';
             
             $scope.submit();
             
+            expect($scope.pparent).toBeDefined();
+            expect($scope.pparent.cancel).toBeDefined();
             expect($scope.pparent.cancel).toHaveBeenCalled();
         });
         
