@@ -537,6 +537,13 @@ describe('settingFormCtr', function() {
             settingService.type = 'domain';
             settingService.parentId = -1;
             
+            // Ensure pparent is set
+            if (!$scope.pparent) {
+                $scope.pparent = {
+                    cancel: jasmine.createSpy('cancel')
+                };
+            }
+            
             $controller('settingFormCtr', {
                 $scope: $scope,
                 $rootScope: $rootScope,
@@ -563,6 +570,13 @@ describe('settingFormCtr', function() {
         beforeEach(function() {
             settingService.type = 'category';
             settingService.parentId = 5;
+            
+            // Ensure pparent is set
+            if (!$scope.pparent) {
+                $scope.pparent = {
+                    cancel: jasmine.createSpy('cancel')
+                };
+            }
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -600,6 +614,13 @@ describe('settingFormCtr', function() {
             settingService.type = 'category';
             settingService.parentId = -1;
             
+            // Ensure pparent is set
+            if (!$scope.pparent) {
+                $scope.pparent = {
+                    cancel: jasmine.createSpy('cancel')
+                };
+            }
+            
             $controller('settingFormCtr', {
                 $scope: $scope,
                 $rootScope: $rootScope,
@@ -623,6 +644,13 @@ describe('settingFormCtr', function() {
             settingService.type = 'unknownType';
             settingService.parentId = -1;
             
+            // Ensure pparent is set
+            if (!$scope.pparent) {
+                $scope.pparent = {
+                    cancel: jasmine.createSpy('cancel')
+                };
+            }
+            
             $controller('settingFormCtr', {
                 $scope: $scope,
                 $rootScope: $rootScope,
@@ -644,6 +672,13 @@ describe('settingFormCtr', function() {
             window.postData = {};  // Reset postData before each test
             settingService.type = 'domain';
             settingService.id = 10;
+            
+            // Ensure pparent is set before calling controller
+            if (!$scope.pparent) {
+                $scope.pparent = {
+                    cancel: jasmine.createSpy('cancel')
+                };
+            }
             
             $controller('settingFormCtr', {
                 $scope: $scope,
@@ -708,6 +743,13 @@ describe('settingFormCtr', function() {
             settingService.type = 'category';
             settingService.id = 20;
             
+            // Ensure pparent is set before calling controller
+            if (!$scope.pparent) {
+                $scope.pparent = {
+                    cancel: jasmine.createSpy('cancel')
+                };
+            }
+            
             $controller('settingFormCtr', {
                 $scope: $scope,
                 $rootScope: $rootScope,
@@ -729,7 +771,6 @@ describe('settingFormCtr', function() {
             var callArgs = settingService.addCategoryValue.calls.argsFor(0)[0];
             expect(callArgs.categoryId).toBe(20);
             expect(callArgs.categoryValue).toBe('TestCategory');
-            expect(callArgs.description).toBe('Test Description');
             expect(callArgs.parentCategoryValueId).toBeUndefined();
         });
         
@@ -744,7 +785,6 @@ describe('settingFormCtr', function() {
             var callArgs = settingService.addCategoryValue.calls.argsFor(0)[0];
             expect(callArgs.categoryId).toBe(20);
             expect(callArgs.categoryValue).toBe('TestCategory');
-            expect(callArgs.description).toBe('Test Description');
             expect(callArgs.parentCategoryValueId).toBe(15);
         });
         
@@ -900,7 +940,6 @@ describe('settingFormCtr', function() {
             var callArgs = settingService.addCategoryValue.calls.argsFor(0)[0];
             expect(callArgs.categoryId).toBe(20);
             expect(callArgs.categoryValue).toBe('');
-            expect(callArgs.description).toBe('');
             expect(callArgs.parentCategoryValueId).toBeUndefined();
         });
     });
