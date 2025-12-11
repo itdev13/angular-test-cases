@@ -27,14 +27,14 @@ describe('settingCtrl', function() {
         };
         
         // Mock HTTP requests
-        $httpBackend.whenGET(/apis\/domainApp/).respond({ id: 1, relations: [] });
+        $httpBackend.whenGET(/apis\/domain/).respond({ id: 1, relations: [] });
         $httpBackend.whenGET(/apis\/domain/).respond({ values: [] });
         $httpBackend.whenGET(/apis\/category/).respond([]);
         $httpBackend.whenPOST(/apis\/domain/).respond('Success');
         $httpBackend.whenPOST(/apis\/category/).respond('Success');
         
         // Spy on service methods
-        spyOn(settingService, 'domainApp').and.callThrough();
+        spyOn(settingService, 'domain').and.callThrough();
         spyOn(settingService, 'deleteCatValue').and.returnValue($q.when('Success'));
         spyOn(settingService, 'deleteDomainValue').and.returnValue($q.when('Success'));
         
@@ -108,7 +108,7 @@ describe('settingCtrl', function() {
         it('should load domain when isBa is true', function() {
             functions.isBa.and.returnValue(true);
             
-            settingService.domainApp.and.callFake(function(app, callback) {
+            settingService.domain.and.callFake(function(app, callback) {
                 callback({
                     id: 1,
                     name: 'TestDomain',
@@ -128,7 +128,7 @@ describe('settingCtrl', function() {
                 functions: functions
             });
             
-            expect(settingService.domainApp).toHaveBeenCalledWith('testApp', jasmine.any(Function));
+            expect(settingService.domain).toHaveBeenCalledWith('testApp', jasmine.any(Function));
             expect($scope.domain).toEqual({
                 id: 1,
                 name: 'TestDomain',
@@ -155,7 +155,7 @@ describe('settingCtrl', function() {
                 functions: functions
             });
             
-            expect(settingService.domainApp).not.toHaveBeenCalled();
+            expect(settingService.domain).not.toHaveBeenCalled();
             expect($scope.domain).toBeUndefined();
             expect($scope.templateTypes).toBeUndefined();
         });
