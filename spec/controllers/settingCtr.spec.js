@@ -665,11 +665,6 @@ describe('settingFormCtr', function() {
             settingService.type = 'domain';
             settingService.id = 10;
             
-            // Reset pparent spy for each test
-            $scope.pparent = {
-                cancel: jasmine.createSpy('cancel')
-            };
-            
             $controller('settingFormCtr', {
                 $scope: $scope,
                 $rootScope: $rootScope,
@@ -677,6 +672,11 @@ describe('settingFormCtr', function() {
                 baseService: baseService,
                 functions: functions
             });
+            
+            // Set pparent AFTER controller instantiation to ensure it persists
+            $scope.pparent = {
+                cancel: jasmine.createSpy('cancel')
+            };
             
             spyOn($rootScope, '$broadcast');
         });
@@ -733,11 +733,6 @@ describe('settingFormCtr', function() {
             settingService.type = 'category';
             settingService.id = 20;
             
-            // Reset pparent spy for each test
-            $scope.pparent = {
-                cancel: jasmine.createSpy('cancel')
-            };
-            
             $controller('settingFormCtr', {
                 $scope: $scope,
                 $rootScope: $rootScope,
@@ -745,6 +740,11 @@ describe('settingFormCtr', function() {
                 baseService: baseService,
                 functions: functions
             });
+            
+            // Set pparent AFTER controller instantiation to ensure it persists
+            $scope.pparent = {
+                cancel: jasmine.createSpy('cancel')
+            };
             
             spyOn($rootScope, '$broadcast');
         });
