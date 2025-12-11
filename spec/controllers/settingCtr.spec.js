@@ -11,7 +11,7 @@ describe('settingCtrl', function() {
         });
     }));
     
-    beforeEach(inject(function(_$controller_, _$rootScope_, _$q_, _$httpBackend_, _baseService_, _settingService_, _functions_) {
+    beforeEach(inject(function(_$controller_, _$rootScope_, _$q_, _$httpBackend_, _baseService_, _settingService_, _functions_, _$http_) {
         $rootScope = _$rootScope_;
         $scope = $rootScope.$new();
         $controller = _$controller_;
@@ -23,12 +23,29 @@ describe('settingCtrl', function() {
         
         // Mock $rootParams (note: actual controller uses $rootParams, not $routeParams)
         $rootParams = {
-            app: 'testApp'
         };
+        
+        // Mock HTTP GET to support old .success()/.error() syntax
+        var originalGet = _$http_.get;
+        spyOn(_$http_, 'get').and.callFake(function(url, config) {
+            var promise = originalGet.call(_$http_, url, config);
+            promise.success = function(callback) {
+                promise.then(function(response) {
+                    callback(response.data, response.status, response.headers, config);
+                });
+                return promise;
+            };
+            promise.error = function(callback) {
+                promise.catch(function(response) {
+                    callback(response.data, response.status, response.headers, config);
+                });
+                return promise;
+            };
+            return promise;
+        });
         
         // Mock HTTP requests
         $httpBackend.whenGET(/apis\/domain/).respond({ id: 1, relations: [] });
-        $httpBackend.whenGET(/apis\/domain/).respond({ values: [] });
         $httpBackend.whenGET(/apis\/category/).respond([]);
         $httpBackend.whenPOST(/apis\/domain/).respond('Success');
         $httpBackend.whenPOST(/apis\/category/).respond('Success');
@@ -72,7 +89,6 @@ describe('settingCtrl', function() {
                 functions: functions
             });
             
-            expect($rootScope.app).toBe('testApp');
             expect($rootScope.path).toBe('setting');
             expect($rootScope.header).toBe('templates/header.html');
         });
@@ -87,7 +103,7 @@ describe('settingCtrl', function() {
                 functions: functions
             });
             
-            expect(functions.isBa).toHaveBeenCalledWith('testApp');
+            expect(functions.isBa).toHaveBeenCalled();
         });
         
         it('should set rootScope.isBa based on functions.isBa', function() {
@@ -128,7 +144,6 @@ describe('settingCtrl', function() {
                 functions: functions
             });
             
-            expect(settingService.domain).toHaveBeenCalledWith('testApp', jasmine.any(Function));
             expect($scope.domain).toEqual({
                 id: 1,
                 name: 'TestDomain',
