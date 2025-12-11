@@ -234,6 +234,16 @@ describe('settingForeCtr', function() {
             expect(mockFind).toHaveBeenCalledWith('.active');
             expect(mockParent).toHaveBeenCalled();
         });
+        
+        it('should handle unknown type and only update UI', function() {
+            $scope.load('unknownType', 1, '.target-element', null);
+            
+            expect($scope.loading).toBe(1);
+            expect(settingService.id).toBe(1);
+            expect(baseService.domainValues).not.toHaveBeenCalled();
+            expect(baseService.categoryValues).not.toHaveBeenCalled();
+            // Only UI updates should happen
+        });
     });
     
     describe('$scope.setTitle function', function() {
