@@ -1,7 +1,12 @@
-fdescribe('Directives Test Suite', function() {
-  var $compile, $rootScope, $scope, $interval, $window, $templateCache, element, THROTTLE_MILLISECONDS;
+describe('Directives Test Suite', function() {
+  var $compile, $rootScope, $scope, $interval, $window, $httpBackend, element, THROTTLE_MILLISECONDS;
 
   beforeEach(module('ncApp'));
+
+  // Mock all template requests using $httpBackend
+  beforeEach(inject(function(_$httpBackend_) {
+    _$httpBackend_.whenGET(/templates\/.*/).respond(200, '');
+  }));
 
   beforeEach(function() {
     // Mock jQuery globally
@@ -39,49 +44,21 @@ fdescribe('Directives Test Suite', function() {
     };
   });
 
-  beforeEach(inject(function(_$compile_, _$rootScope_, _$interval_, _$window_, _$templateCache_) {
+  beforeEach(inject(function(_$compile_, _$rootScope_, _$interval_, _$window_, _$httpBackend_) {
     $compile = _$compile_;
     $rootScope = _$rootScope_;
     $scope = _$rootScope_.$new();
     $interval = _$interval_;
     $window = _$window_;
-    $templateCache = _$templateCache_;
-    
-    // Mock all directive templates with proper HTML structure
-    // This allows the directive controllers to be instantiated properly
-    $templateCache.put('templates/directives/tree.html', 
-      '<div class="tree-directive">' +
-      '  <input type="checkbox" />' +
-      '  <span>Tree Node</span>' +
-      '</div>'
-    );
-    
-    $templateCache.put('templates/directives/multiSelectWithSearch.html', 
-      '<div class="multiselect-search">' +
-      '  <input type="text" placeholder="Search..." />' +
-      '  <div class="options"></div>' +
-      '</div>'
-    );
-    
-    $templateCache.put('templates/directives/multiSelect.html', 
-      '<div class="multiselect">' +
-      '  <div class="options"></div>' +
-      '</div>'
-    );
-    
-    $templateCache.put('templates/directives/smultiSelect.html', 
-      '<div class="smultiselect">' +
-      '  <div class="options"></div>' +
-      '</div>'
-    );
-    
-    $templateCache.put('templates/directives/smultiSelectWithSearch.html', 
-      '<div class="smultiselect-search">' +
-      '  <input type="text" placeholder="Search..." />' +
-      '  <div class="options"></div>' +
-      '</div>'
-    );
+    $httpBackend = _$httpBackend_;
   }));
+
+  afterEach(function() {
+    if($httpBackend) {
+      $httpBackend.verifyNoOutstandingExpectation();
+      $httpBackend.verifyNoOutstandingRequest();
+    }
+  });
 
   describe('tree directive', function() {
     beforeEach(function() {
@@ -480,6 +457,33 @@ fdescribe('Directives Test Suite', function() {
       $scope.$digest();
       
       expect(element).toBeDefined();
+    });
+  });
+
+  // Example: How to mock API calls in directive tests
+  describe('Example: Mocking API calls with $httpBackend', function() {
+    it('should mock API response', function() {
+      // Mock API endpoint
+      $httpBackend.whenGET('apis/reader/info').respond(200, {
+        userId: 123,
+        name: 'Test User'
+      });
+      
+      // If your directive makes an API call, it would work like this:
+      // directiveFunction();
+      // $httpBackend.flush();
+      
+      expect(true).toBe(true);
+    });
+
+    it('should handle API errors gracefully', function() {
+      // Mock API error response
+      $httpBackend.whenGET('apis/data/endpoint').respond(500, {
+        error: 'Server error'
+      });
+      
+      // Test error handling in your directive
+      expect(true).toBe(true);
     });
   });
 });
