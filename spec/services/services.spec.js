@@ -156,27 +156,27 @@ describe('Services', function() {
         });
     });
 
-    // ===== NZLIST SERVICE TESTS =====
-    describe('nzList Service', function() {
-        var nzList;
+    // ===== NCLIST SERVICE TESTS =====
+    describe('ncList Service', function() {
+        var ncList;
 
-        beforeEach(inject(function(_nzList_) {
-            nzList = _nzList_;
+        beforeEach(inject(function(_ncList_) {
+            ncList = _ncList_;
         }));
 
         it('should exist', function() {
-            expect(nzList).toBeDefined();
+            expect(ncList).toBeDefined();
         });
 
         it('should have getList method', function() {
-            expect(typeof nzList.getList).toBe('function');
+            expect(typeof ncList.getList).toBe('function');
         });
 
         it('should make POST request in getList', function() {
             var searchBy = { status: 'ACTIVE' };
             $httpBackend.expectPOST('apis/notification/search', searchBy).respond(200, []);
 
-            nzList.getList(searchBy);
+            ncList.getList(searchBy);
 
             $httpBackend.flush();
         });
@@ -187,46 +187,46 @@ describe('Services', function() {
                 return headers['smUser'] === 'testuser123';
             }).respond(200, []);
 
-            nzList.getList(searchBy);
+            ncList.getList(searchBy);
 
             $httpBackend.flush();
         });
 
         it('should have getTotalNum method', function() {
-            expect(typeof nzList.getTotalNum).toBe('function');
+            expect(typeof ncList.getTotalNum).toBe('function');
         });
 
         it('should make POST request in getTotalNum', function() {
             var searchBy = { status: 'ACTIVE' };
             $httpBackend.expectPOST('apis/notification/searchTotal', searchBy).respond(200, { total: 10 });
 
-            nzList.getTotalNum(searchBy);
+            ncList.getTotalNum(searchBy);
 
             $httpBackend.flush();
         });
 
         it('should have getStatusCountDashboard method', function() {
-            expect(typeof nzList.getStatusCountDashboard).toBe('function');
+            expect(typeof ncList.getStatusCountDashboard).toBe('function');
         });
 
         it('should make POST request in getStatusCountDashboard', function() {
             var searchBy = {};
             $httpBackend.expectPOST('apis/notification/getStatusCountDashboard', searchBy).respond(200, {});
 
-            nzList.getStatusCountDashboard(searchBy);
+            ncList.getStatusCountDashboard(searchBy);
 
             $httpBackend.flush();
         });
 
         it('should have attestationLogin method', function() {
-            expect(typeof nzList.attestationLogin).toBe('function');
+            expect(typeof ncList.attestationLogin).toBe('function');
         });
 
         it('should make POST request in attestationLogin', function() {
             var loginData = { username: 'user', password: 'pass' };
             $httpBackend.expectPOST('apis/reader/login', loginData).respond(200, { success: true });
 
-            nzList.attestationLogin(loginData);
+            ncList.attestationLogin(loginData);
 
             $httpBackend.flush();
         });
@@ -1191,123 +1191,123 @@ describe('Services', function() {
     // Removed: $httpProvider not available in test context
 
     // ===== NZLIST ADDITIONAL METHODS TESTS =====
-    describe('nzList Additional Methods', function() {
-        var nzList;
+    describe('ncList Additional Methods', function() {
+        var ncList;
 
-        beforeEach(inject(function(_nzList_) {
-            nzList = _nzList_;
+        beforeEach(inject(function(_ncList_) {
+            ncList = _ncList_;
         }));
 
         it('should have previewNotification method', function() {
-            expect(typeof nzList.previewNotification).toBe('function');
+            expect(typeof ncList.previewNotification).toBe('function');
         });
 
         it('should preview notification', function() {
             $httpBackend.whenGET(/api\/s/).respond(200, {});
             
-            nzList.previewNotification(123, 456);
+            ncList.previewNotification(123, 456);
             
             $httpBackend.flush();
         });
 
         it('should have viewNotification method', function() {
-            expect(typeof nzList.viewNotification).toBe('function');
+            expect(typeof ncList.viewNotification).toBe('function');
         });
 
         it('should view notification', function() {
             $httpBackend.whenGET('apis/view/160829/123').respond(200, {});
             
-            nzList.viewNotification(123, '160829');
+            ncList.viewNotification(123, '160829');
             
             $httpBackend.flush();
         });
 
         it('should have fullTextSearch method', function() {
-            expect(typeof nzList.fullTextSearch).toBe('function');
+            expect(typeof ncList.fullTextSearch).toBe('function');
         });
 
         // Removed: Full text search test - URL format mismatch
 
         it('should have auditHistory method', function() {
-            expect(typeof nzList.auditHistory).toBe('function');
+            expect(typeof ncList.auditHistory).toBe('function');
         });
 
         it('should have getContactInfo method', function() {
-            expect(typeof nzList.getContactInfo).toBe('function');
+            expect(typeof ncList.getContactInfo).toBe('function');
         });
 
         it('should get contact info', function() {
             $httpBackend.whenGET('apis/notification/getContactInfo?appId=160829').respond(200, {});
             
-            nzList.getContactInfo('160829');
+            ncList.getContactInfo('160829');
             
             $httpBackend.flush();
         });
 
         it('should have emailHistory method', function() {
-            expect(typeof nzList.emailHistory).toBe('function');
+            expect(typeof ncList.emailHistory).toBe('function');
         });
 
         it('should have enableData method', function() {
-            expect(typeof nzList.enableData).toBe('function');
+            expect(typeof ncList.enableData).toBe('function');
         });
 
         it('should have nextTasks method', function() {
-            expect(typeof nzList.nextTasks).toBe('function');
+            expect(typeof ncList.nextTasks).toBe('function');
         });
 
         it('should have lastestSchedule method', function() {
-            expect(typeof nzList.lastestSchedule).toBe('function');
+            expect(typeof ncList.lastestSchedule).toBe('function');
         });
 
         it('should get latest schedule', function() {
             $httpBackend.whenGET('apis/notification/lastestScheduleStatus').respond(200, {});
             
-            nzList.lastestSchedule();
+            ncList.lastestSchedule();
             
             $httpBackend.flush();
         });
 
         it('should have getUser method', function() {
-            expect(typeof nzList.getUser).toBe('function');
+            expect(typeof ncList.getUser).toBe('function');
         });
 
         it('should have getUserInfo method', function() {
-            expect(typeof nzList.getUserInfo).toBe('function');
+            expect(typeof ncList.getUserInfo).toBe('function');
         });
 
         it('should get user info', function() {
             $httpBackend.whenGET(/apis\/user\/user123\?t=\d+/).respond(200, {});
             
-            nzList.getUserInfo('user123');
+            ncList.getUserInfo('user123');
             
             $httpBackend.flush();
         });
 
         it('should have reportReaders method', function() {
-            expect(typeof nzList.reportReaders).toBe('function');
+            expect(typeof ncList.reportReaders).toBe('function');
         });
 
         it('should have attestationActiveUser method', function() {
-            expect(typeof nzList.attestationActiveUser).toBe('function');
+            expect(typeof ncList.attestationActiveUser).toBe('function');
         });
 
         it('should get attestation active user', function() {
             $httpBackend.whenGET('apis/reader/info').respond(200, {});
             
-            nzList.attestationActiveUser();
+            ncList.attestationActiveUser();
             
             $httpBackend.flush();
         });
 
         it('should have attestationConfirm method', function() {
-            expect(typeof nzList.attestationConfirm).toBe('function');
+            expect(typeof ncList.attestationConfirm).toBe('function');
         });
 
         it('should confirm attestation', function() {
             $httpBackend.whenGET('apis/reader/confirm?appId=160829&displayNotificationId=D1&notificationId=N1').respond(200, {});
             
-            nzList.attestationConfirm('160829', 'D1', 'N1');
+            ncList.attestationConfirm('160829', 'D1', 'N1');
             
             $httpBackend.flush();
         });
@@ -1496,32 +1496,32 @@ describe('Services', function() {
     });
 
     // ===== NZLIST ADDITIONAL COVERAGE =====
-    describe('nzList Extended Coverage', function() {
-        var nzList;
+    describe('ncList Extended Coverage', function() {
+        var ncList;
 
-        beforeEach(inject(function(_nzList_) {
-            nzList = _nzList_;
+        beforeEach(inject(function(_ncList_) {
+            ncList = _ncList_;
         }));
 
         it('should set NotificationId property', function() {
-            nzList.NotificationId = 12345;
-            expect(nzList.NotificationId).toBe(12345);
+            ncList.NotificationId = 12345;
+            expect(ncList.NotificationId).toBe(12345);
         });
 
         it('should get audit history with NotificationId', function() {
-            nzList.NotificationId = 999;
+            ncList.NotificationId = 999;
             $httpBackend.whenGET('apis/notification/auditHistory/999').respond(200, []);
             
-            nzList.auditHistory();
+            ncList.auditHistory();
             
             $httpBackend.flush();
         });
 
         it('should get email history with NotificationId', function() {
-            nzList.NotificationId = 888;
+            ncList.NotificationId = 888;
             $httpBackend.whenGET('apis/notification/emailHistory?notificationId=888').respond(200, []);
             
-            nzList.emailHistory();
+            ncList.emailHistory();
             
             $httpBackend.flush();
         });
