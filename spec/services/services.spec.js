@@ -58,8 +58,8 @@ describe('Services', function() {
         };
 
         // Catch-all for any unexpected requests
-        $httpBackend.whenGET(/.*/).respond(200, {});
-        $httpBackend.whenPOST(/.*/).respond(200, {});
+        // $httpBackend.whenGET(/.*/).respond(200, {});
+        // $httpBackend.whenPOST(/.*/).respond(200, {});
     }));
 
     afterEach(function() {
