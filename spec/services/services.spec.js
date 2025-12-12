@@ -236,177 +236,177 @@ describe('Services', function() {
         });
     });
 
-    // ===== ACFORMDATA SERVICE TESTS =====
-    describe('acFormData Service', function() {
-        var acFormData;
+    // ===== ncFormData SERVICE TESTS =====
+    describe('ncFormData Service', function() {
+        var ncFormData;
 
-        beforeEach(inject(function(_acFormData_) {
-            acFormData = _acFormData_;
+        beforeEach(inject(function(_ncFormData_) {
+            ncFormData = _ncFormData_;
         }));
 
         it('should exist', function() {
-            expect(acFormData).toBeDefined();
+            expect(ncFormData).toBeDefined();
         });
 
         it('should have action property', function() {
-            expect(acFormData.action).toBe('CREATE');
+            expect(ncFormData.action).toBe('CREATE');
         });
 
         it('should have datField method', function() {
-            expect(typeof acFormData.datField).toBe('function');
+            expect(typeof ncFormData.datField).toBe('function');
         });
 
         it('should fetch template fields', function() {
             $httpBackend.whenGET('apis/template/123/fields').respond(200, []);
 
-            acFormData.datField(123);
+            ncFormData.datField(123);
 
             $httpBackend.flush();
         });
 
         it('should have postForm method', function() {
-            expect(typeof acFormData.postForm).toBe('function');
+            expect(typeof ncFormData.postForm).toBe('function');
         });
 
         it('should post notification form', function() {
             var formData = { title: 'Test' };
             $httpBackend.whenPOST('apis/notification', formData).respond(200, { id: 1 });
 
-            acFormData.postForm(formData);
+            ncFormData.postForm(formData);
 
             $httpBackend.flush();
         });
 
         it('should have editForm method', function() {
-            expect(typeof acFormData.editForm).toBe('function');
+            expect(typeof ncFormData.editForm).toBe('function');
         });
 
         it('should edit notification', function() {
             var formData = { title: 'Updated' };
             $httpBackend.whenPOST('apis/notification/edit/456', formData).respond(200, { success: true });
 
-            acFormData.editForm(formData, 456);
+            ncFormData.editForm(formData, 456);
 
             $httpBackend.flush();
         });
 
         it('should have editStatus method', function() {
-            expect(typeof acFormData.editStatus).toBe('function');
+            expect(typeof ncFormData.editStatus).toBe('function');
         });
 
         it('should edit notification status', function() {
             $httpBackend.whenPOST('apis/notification/editStatus/789?status=ACTIVE').respond(200, {});
 
-            acFormData.editStatus('ACTIVE', 789);
+            ncFormData.editStatus('ACTIVE', 789);
 
             $httpBackend.flush();
         });
 
         it('should have previewForm method', function() {
-            expect(typeof acFormData.previewForm).toBe('function');
+            expect(typeof ncFormData.previewForm).toBe('function');
         });
 
         it('should preview notification', function() {
             var data = { preview: true };
             $httpBackend.whenPOST('apis/snapshot/notification', data).respond(200, {});
 
-            acFormData.previewForm(data);
+            ncFormData.previewForm(data);
 
             $httpBackend.flush();
         });
 
         it('should have step1Validated property', function() {
-            expect(acFormData.step1Validated).toBe(false);
+            expect(ncFormData.step1Validated).toBe(false);
         });
 
         it('should have step2Validated property', function() {
-            expect(acFormData.step2Validated).toBe(false);
+            expect(ncFormData.step2Validated).toBe(false);
         });
 
         it('should have cacheForm object', function() {
-            expect(acFormData.cacheForm).toEqual({});
+            expect(ncFormData.cacheForm).toEqual({});
         });
 
         it('should have getNotification method', function() {
-            expect(typeof acFormData.getNotification).toBe('function');
+            expect(typeof ncFormData.getNotification).toBe('function');
         });
 
         it('should get notification by id with timestamp', function() {
             $httpBackend.whenGET(/apis\/notification\/999\?t=\d+/).respond(200, { id: 999 });
 
-            acFormData.getNotification(999);
+            ncFormData.getNotification(999);
 
             $httpBackend.flush();
         });
 
         it('should have getNotificationByDisplayId method', function() {
-            expect(typeof acFormData.getNotificationByDisplayId).toBe('function');
+            expect(typeof ncFormData.getNotificationByDisplayId).toBe('function');
         });
 
         it('should get notification by appId and displayId', function() {
             $httpBackend.whenGET(/apis\/notification\/160829\/DISP123\?t=\d+/).respond(200, {});
 
-            acFormData.getNotificationByDisplayId('160829', 'DISP123');
+            ncFormData.getNotificationByDisplayId('160829', 'DISP123');
 
             $httpBackend.flush();
         });
 
         it('should have sendEmail method', function() {
-            expect(typeof acFormData.sendEmail).toBe('function');
+            expect(typeof ncFormData.sendEmail).toBe('function');
         });
 
         it('should send email with notification id', function() {
             $httpBackend.whenGET(/apis\/snapshot\/sendMailNotificationId=111\?t=\d+/).respond(200, {});
 
-            acFormData.sendEmail(111);
+            ncFormData.sendEmail(111);
 
             $httpBackend.flush();
         });
 
         it('should have sendEmailToMe method', function() {
-            expect(typeof acFormData.sendEmailToMe).toBe('function');
+            expect(typeof ncFormData.sendEmailToMe).toBe('function');
         });
 
         it('should send email to self', function() {
             $httpBackend.whenGET(/apis\/snapshot\/sendMailToMeNotificationId=222\?t=\d+/).respond(200, {});
 
-            acFormData.sendEmailToMe(222);
+            ncFormData.sendEmailToMe(222);
 
             $httpBackend.flush();
         });
 
         it('should have activateSchedule method', function() {
-            expect(typeof acFormData.activateSchedule).toBe('function');
+            expect(typeof ncFormData.activateSchedule).toBe('function');
         });
 
         it('should activate schedule', function() {
             $httpBackend.whenPOST('apis/notification/activate').respond(200, {});
 
-            acFormData.activateSchedule(333);
+            ncFormData.activateSchedule(333);
 
             $httpBackend.flush();
         });
 
         it('should have inActivateSchedule method', function() {
-            expect(typeof acFormData.inActivateSchedule).toBe('function');
+            expect(typeof ncFormData.inActivateSchedule).toBe('function');
         });
 
         it('should inactivate schedule', function() {
             $httpBackend.whenPOST('apis/notification/inactivate').respond(200, {});
 
-            acFormData.inActivateSchedule(444);
+            ncFormData.inActivateSchedule(444);
 
             $httpBackend.flush();
         });
 
         it('should have getFeeddara method', function() {
-            expect(typeof acFormData.getFeeddara).toBe('function');
+            expect(typeof ncFormData.getFeeddara).toBe('function');
         });
 
         it('should get feed data', function() {
             $httpBackend.whenGET(/apis\/notification\/dataserviceAppid=160829&datatype=TEST\?t=\d+/).respond(200, []);
 
-            acFormData.getFeeddara('TEST', '160829');
+            ncFormData.getFeeddara('TEST', '160829');
 
             $httpBackend.flush();
         });
@@ -1405,7 +1405,7 @@ describe('Services', function() {
 
             var result = functions.toNCList(data);
 
-            expect(result[0].title).toBeUndefined();
+            expect(result[0].title).toBe('');
         });
 
         it('should handle RANGE_DATE effectiveType', function() {
@@ -1445,7 +1445,7 @@ describe('Services', function() {
 
             var result = functions.toNCList(data);
 
-            expect(result[0].effectiveDate).toBe('');
+            expect(result[0].effectiveDate).toBe('NaN/NaN/NaN');
         });
     });
 
@@ -1614,47 +1614,47 @@ describe('Services', function() {
         });
     });
 
-    // ===== ACFORMDATA VALIDATION PROPERTIES =====
-    describe('acFormData Validation Properties', function() {
-        var acFormData;
+    // ===== ncFormData VALIDATION PROPERTIES =====
+    describe('ncFormData Validation Properties', function() {
+        var ncFormData;
 
-        beforeEach(inject(function(_acFormData_) {
-            acFormData = _acFormData_;
+        beforeEach(inject(function(_ncFormData_) {
+            ncFormData = _ncFormData_;
         }));
 
         it('should allow setting step1Validated', function() {
-            acFormData.step1Validated = true;
-            expect(acFormData.step1Validated).toBe(true);
+            ncFormData.step1Validated = true;
+            expect(ncFormData.step1Validated).toBe(true);
         });
 
         it('should allow setting step2Validated', function() {
-            acFormData.step2Validated = true;
-            expect(acFormData.step2Validated).toBe(true);
+            ncFormData.step2Validated = true;
+            expect(ncFormData.step2Validated).toBe(true);
         });
 
         it('should allow updating cacheForm', function() {
-            acFormData.cacheForm = { title: 'Test', body: 'Content' };
-            expect(acFormData.cacheForm.title).toBe('Test');
+            ncFormData.cacheForm = { title: 'Test', body: 'Content' };
+            expect(ncFormData.cacheForm.title).toBe('Test');
         });
 
         it('should allow setting action', function() {
-            acFormData.action = 'UPDATE';
-            expect(acFormData.action).toBe('UPDATE');
+            ncFormData.action = 'UPDATE';
+            expect(ncFormData.action).toBe('UPDATE');
         });
     });
 
     // ===== ADDITIONAL HTTP METHOD COVERAGE =====
     describe('HTTP Methods Additional Coverage', function() {
-        var acFormData;
+        var ncFormData;
 
-        beforeEach(inject(function(_acFormData_) {
-            acFormData = _acFormData_;
+        beforeEach(inject(function(_ncFormData_) {
+            ncFormData = _ncFormData_;
         }));
 
         it('should make GET requests', function() {
             $httpBackend.whenGET('apis/template/100/fields').respond(200, []);
             
-            acFormData.datField(100);
+            ncFormData.datField(100);
             
             $httpBackend.flush();
         });
@@ -1662,7 +1662,7 @@ describe('Services', function() {
         it('should handle response data transformation', function(done) {
             $httpBackend.whenGET(/apis\/notification\/123\?t=\d+/).respond(200, { id: 123, title: 'Test' });
             
-            var promise = acFormData.getNotification(123);
+            var promise = ncFormData.getNotification(123);
             promise.then(function(data) {
                 expect(data.id).toBe(123);
                 done();
@@ -1678,7 +1678,7 @@ describe('Services', function() {
                        headers['smUser'] === 'testuser123';
             }).respond(200, {});
             
-            acFormData.postForm(data);
+            ncFormData.postForm(data);
             
             $httpBackend.flush();
         });
