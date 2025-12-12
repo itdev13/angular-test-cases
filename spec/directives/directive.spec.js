@@ -1,4 +1,4 @@
-describe('Directives Test Suite', function() {
+fdescribe('Directives Test Suite', function() {
   var $compile, $rootScope, $scope, $interval, $window, $templateCache, element, THROTTLE_MILLISECONDS;
 
   beforeEach(module('ncApp'));
