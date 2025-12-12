@@ -37,7 +37,7 @@ describe('File Upload Directives and Controllers', function() {
                 triggerHandler: jasmine.createSpy('triggerHandler')
             };
         };
-
+        
         window.$ = window.jQuery = function(selector) {
             return createMockElement();
         };
@@ -454,7 +454,7 @@ describe('File Upload Directives and Controllers', function() {
 
             expect($scope.queue.length).toBe(1);
             expect($scope.queue[0]).toBe(file3);
-        });
+    });
 
         it('should replace files in queue', function() {
             var oldFile = { name: 'old.jpg' };
@@ -633,7 +633,7 @@ describe('File Upload Directives and Controllers', function() {
             var preview2 = angular.element('<img src="2.jpg" />');
             $scope.filePreview.preview = preview2;
             $scope.$digest();
-
+            
             expect($element.empty).toHaveBeenCalled();
             expect($element.append).toHaveBeenCalledWith(preview2);
         });
@@ -840,7 +840,7 @@ describe('File Upload Directives and Controllers', function() {
                         always: function(fn) {
                             fn();
                             return { then: function() {} };
-                        }
+                            }
                     };
                 }
             }, mockData);
@@ -993,8 +993,8 @@ describe('File Upload Directives and Controllers', function() {
                             return {
                                 then: function(thenFn) {
                                     thenFn();
-                                }
-                            };
+                }
+            };
                         }
                     };
                 }
@@ -1033,7 +1033,7 @@ describe('File Upload Directives and Controllers', function() {
                                     thenFn();
                                 }
                             };
-                        }
+            }
                     };
                 }
             }, mockData);
@@ -1197,7 +1197,7 @@ describe('File Upload Directives and Controllers', function() {
             };
 
             $scope.fileUploadOptions = null;
-
+            
             controller = $controller('FileUploadController', {
                 $scope: $scope,
                 $element: $element,
@@ -1406,7 +1406,7 @@ describe('File Upload Directives and Controllers', function() {
             };
 
             var result = fileUpload.defaults.add({ isDefaultPrevented: function() { return false; } }, data);
-
+            
             expect(data.files[0].error).toBe('File type not allowed.');
             expect(result).toBe(false);
         });
@@ -2015,12 +2015,12 @@ describe('File Upload Directives and Controllers', function() {
                 files: [{ name: 'test.jpg', size: 1000, type: 'image/jpeg' }],
                 process: jasmine.createSpy('dataProcess').and.callFake(function(callback) {
                     processCallback = callback;
-                    return {
+                return {
                         always: function(fn) {
                             fn();
                             return { then: function() {} };
                         }
-                    };
+                };
                 })
             }, mockData);
 
@@ -2071,7 +2071,7 @@ describe('File Upload Directives and Controllers', function() {
                 onHandlers['fileuploadprogress'](event, {});
                 expect(event.preventDefault).toHaveBeenCalled();
             }
-        });
+    });
 
         // Lines 463-464: Watch callback with value change - covered by separate test
 
