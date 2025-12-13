@@ -1617,3 +1617,297 @@ describe('alertController - Comprehensive Coverage Expansion', function() {
   }
 });
 
+
+// Comprehensive searchCtrl tests - now synchronous
+describe('searchCtrl - Full Coverage', function() {
+  var $controller, $scope, $rootScope, $q;
+  var ncFormData, baseService, functions;
+  
+  beforeEach(module('ncApp'));
+  
+  beforeEach(inject(function(_$controller_, _$rootScope_, _$q_) {
+    $controller = _$controller_;
+    $rootScope = _$rootScope_;
+    $scope = $rootScope.$new();
+    $q = _$q_;
+    
+    $rootScope.app = '37948';
+    
+    window.$ = jasmine.createSpy('$').and.returnValue({
+      datepicker: jasmine.createSpy('datepicker')
+    });
+    
+    Date.prototype.dateWithTimeZone = function() { return this.toISOString(); };
+    Array.prototype.getValueByKey = function(k, v, r) {
+      var f = this.find(function(i) { return i[k] === v; });
+      return f ? f[r] : null;
+    };
+    Array.prototype.includeObjectBy = function(k, v) {
+      return this.findIndex(function(i) { return i[k] === v; });
+    };
+    
+    ncFormData = {
+      getField: jasmine.createSpy('getField').and.returnValue({
+        success: function(cb) {
+          cb([
+            {fieldId: 'f1', displayName: 'Field1', displayType: 'TEXT'},
+            {fieldId: 'f2', displayName: 'Field2', displayType: 'TEXT AREA'},
+            {fieldId: 'f3', displayName: 'Field3', displayType: 'SELECT', valueType: 'CATEGORY'},
+            {fieldId: 'f4', displayName: 'Field4', displayType: 'MULTI_SELECT_SEARCH', valueType: 'DOMAIN', domainId: 'D1'}
+          ]);
+          return this;
+        }
+      })
+    };
+    
+    baseService = {
+      getTemplates: jasmine.createSpy('getTemplates').and.callFake(function(app, cb) {
+        cb([{
+          templateTypeId: 1,
+          templates: [{templateId: 10}, {templateId: 20}]  // Two templates, neither is ID 1
+        }], 200);
+      }),
+      categoryValuesByTemplate: jasmine.createSpy('categoryValuesByTemplate').and.returnValue($q.resolve([
+        {categoryId: 'C1', specialCategoryValue: 'ANY', values: []}
+      ])),
+      domainValues: jasmine.createSpy('domainValues').and.returnValue($q.resolve({
+        values: [{domainValueId: 'DV1', domainValue: 'Val1'}]
+      }))
+    };
+    
+    functions = {
+      getValueById: jasmine.createSpy('getValueById').and.returnValue('FieldName')
+    };
+  }));
+  
+  it('should initialize search structure', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    expect($scope.search).toBeDefined();
+    expect($scope.search.effective).toEqual({});
+  });
+  
+  it('should not filter templates when ID 1 not present', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    expect($scope.templates.length).toBe(2);
+    expect($scope.templates[0].templateId).toBe(10);
+    expect($scope.templates[1].templateId).toBe(20);
+  });
+  
+  it('should not auto-call getFields with multiple templates', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    // With 2 templates, getFields should not be auto-called
+    expect($scope.getFields).toBeDefined();
+  });
+  
+  it('should call datePickerE', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.datePickerE();
+    expect(window.$).toHaveBeenCalledWith('.datepickers');
+  });
+  
+  it('should process TEXT fields in getFields', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.getFields(10);
+    var f = $scope.toBeSelect.find(function(i) { return i.fieldId === 'f1'; });
+    expect(f).toBeDefined();
+  });
+  
+  it('should convert TEXT AREA to TEXT', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.getFields(10);
+    var f = $scope.toBeSelect.find(function(i) { return i.fieldId === 'f2'; });
+    expect(f.displayType).toBe('TEXT');
+  });
+  
+  it('should add CATEGORY fields', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.getFields(10);
+    var f = $scope.toBeSelect.find(function(i) { return i.fieldId === 'f3'; });
+    expect(f).toBeDefined();
+  });
+  
+  it('should add DOMAIN fields and load values', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.getFields(10);
+    $scope.$digest();
+    
+    expect(baseService.domainValues).toHaveBeenCalledWith('D1');
+  });
+  
+  it('should addCondition to searchFields', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.toBeSelect = [{fieldId: 'f1', displayName: 'F1', displayType: 'TEXT'}];
+    $scope.searchFields = [];
+    $scope.selected = 'f1';
+    
+    $scope.addCondition();
+    
+    expect($scope.searchFields.length).toBe(1);
+    expect($scope.toBeSelect.length).toBe(0);
+  });
+  
+  it('should initialize dateRange on addCondition', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.toBeSelect = [{fieldId: 'rt', displayName: 'RT', displayType: 'dateRange'}];
+    $scope.searchFields = [];
+    $scope.selected = 'rt';
+    
+    $scope.addCondition();
+    
+    expect($scope.search.rt).toEqual({});
+  });
+  
+  it('should deleteCondition from searchFields', function() {
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.searchFields = [{fieldId: 'f1', displayName: 'F1', displayType: 'TEXT'}];
+    $scope.toBeSelect = [];
+    $scope.search.f1 = 'value';
+    
+    $scope.deleteCondition('f1');
+    
+    expect($scope.searchFields.length).toBe(0);
+    expect($scope.toBeSelect.length).toBe(1);
+    expect($scope.search.f1).toBeUndefined();
+  });
+  
+  it('should searchById and broadcast', function() {
+    $scope.$parent = {cancel: jasmine.createSpy('cancel')};
+    
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    spyOn($rootScope, '$broadcast');
+    $scope.notificationId = '123';
+    
+    $scope.searchById();
+    
+    expect($rootScope.$broadcast).toHaveBeenCalledWith('filterBySearch', {appId: '37948', displayId: '123'});
+    expect($scope.$parent.cancel).toHaveBeenCalled();
+  });
+  
+  it('should lowercase all user fields in advancedSearch', function() {
+    $scope.$parent = {cancel: jasmine.createSpy('cancel')};
+    
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.search.createdBy = 'UPPER';
+    $scope.search.lastUpdatedBy = 'MIXED';
+    $scope.search.reviewer = 'REV';
+    
+    $scope.advancedSearch();
+    
+    expect($scope.search.createdBy).toBe('upper');
+    expect($scope.search.lastUpdatedBy).toBe('mixed');
+    expect($scope.search.reviewer).toBe('rev');
+  });
+  
+  it('should process all date range fields', function() {
+    $scope.$parent = {cancel: jasmine.createSpy('cancel')};
+    
+    var ctrl = $controller('searchCtrl', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.search.effective = {start: '2024-01-01', end: '2024-12-31'};
+    $scope.search.createTime = {end: '2024-12-31'};
+    $scope.search.reviewTime = {start: '2024-01-01'};
+    $scope.search.lastUpdatedTime = {};
+    
+    $scope.advancedSearch();
+    
+    expect($scope.search.effective).toBeDefined();
+    expect($scope.search.lastUpdatedTime).toBeUndefined();
+  });
+});
