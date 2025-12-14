@@ -1,6 +1,14 @@
 describe('File Upload Directives and Controllers', function() {
     var $rootScope, $scope, $controller, $compile, $window, $parse, fileUpload;
 
+    // Load module FIRST before any inject or setup
+    beforeEach(module('ncApp'));
+
+    // Mock all template requests
+    beforeEach(inject(function(_$httpBackend_) {
+        _$httpBackend_.whenGET(/templates\/.*/).respond(200, '');
+    }));
+
     beforeEach(function() {
         // Setup global constants
         window.MAXFileSize = 5000000;
@@ -11,43 +19,36 @@ describe('File Upload Directives and Controllers', function() {
             'application/pdf'
         ]);
 
-        // Mock jQuery with fileupload support
-        var createMockElement = function() {
-            var chainable = {
-                on: jasmine.createSpy('on').and.callFake(function() {
-                    return chainable;
-                })
-            };
-            return {
-                fileupload: jasmine.createSpy('fileupload').and.callFake(function(arg) {
-                    if (typeof arg === 'object' || arg === undefined) {
-                        return chainable;
-                    }
-                    if (arg === 'progress') return { loaded: 50, total: 100 };
-                    if (arg === 'active') return 2;
-                    if (arg === 'processing') return 1;
-                    if (arg === 'option' && arguments[1] === 'scope') return $scope;
-                    return chainable;
-                }),
-                on: jasmine.createSpy('on').and.returnValue(this),
-                prop: jasmine.createSpy('prop').and.returnValue(''),
-                empty: jasmine.createSpy('empty'),
-                append: jasmine.createSpy('append'),
-                trigger: jasmine.createSpy('trigger'),
-                triggerHandler: jasmine.createSpy('triggerHandler')
-            };
-        };
+        // DO NOT replace jQuery - just add the fileupload plugin!
+        // Real jQuery is already loaded with all methods (.scrollTop, .height, .find, etc.)
         
-        window.$ = window.jQuery = function(selector) {
-            return createMockElement();
-        };
-        window.$.support = { fileInput: true };
-        window.$.fn = { fileupload: function() { return this; } };
-        window.$.Event = function(type, props) {
-            return angular.extend({ type: type }, props);
-        };
+        if (!window.$ || !window.$.fn) {
+            throw new Error('jQuery must be loaded before file-upload tests');
+        }
 
-        module('ncApp');
+        // Mock ONLY the jQuery fileupload plugin - leave everything else intact
+        window.$.fn.fileupload = jasmine.createSpy('fileupload').and.callFake(function(arg) {
+            var chainable = {
+                on: jasmine.createSpy('on').and.returnValue(chainable)
+            };
+            
+            // Handle different argument types
+            if (typeof arg === 'object' || arg === undefined) {
+                return chainable;
+            }
+            if (arg === 'progress') return { loaded: 50, total: 100 };
+            if (arg === 'active') return 2;
+            if (arg === 'processing') return 1;
+            if (arg === 'option') {
+                if (arguments[1] === 'scope') return $scope;
+                return {};
+            }
+            return chainable;
+        });
+
+        // Ensure fileInput support is enabled
+        window.$.support = window.$.support || {};
+        window.$.support.fileInput = true;
     });
 
     beforeEach(inject(function(_$rootScope_, _$controller_, _$compile_, _$window_, _$parse_) {
