@@ -2047,8 +2047,8 @@ describe('notificationCtr.js - Complete Test Suite', function() {
                 reportOfReaders: jasmine.createSpy('reportOfReaders').and.returnValue({
                     success: function(callback) {
                         callback([
-                            'Name With Spaces_AB12345_2024-01-01 10:30:00',
-                            'Name-With-Dash_CD67890_2024-01-02 15:45:30'
+                            'Name With Spaces__AB12345__2024-01-01 10:30:00',
+                            'Name-With-Dash__CD67890__2024-01-02 15:45:30'
                         ]);
                         return this;
                     }
