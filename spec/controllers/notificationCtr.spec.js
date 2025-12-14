@@ -674,7 +674,7 @@ describe('notificationCtr.js - Complete Test Suite', function() {
                 NotificationId: '123',
                 reportOfReaders: jasmine.createSpy('reportOfReaders').and.returnValue({
                     success: function(callback) {
-                        callback(['John Doe_AB12345_2024-01-01', 'Jane Smith_CD67890_2024-01-02']);
+                        callback(['John Doe__AB12345__024-01-01', 'Jane Smith__CD67890__2024-01-02']);
                         return this;
                     }
                 })
