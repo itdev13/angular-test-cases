@@ -305,7 +305,7 @@ describe('notificationCtr.js - Complete Test Suite', function() {
                 $route: $route,
                 userService: userService
             });
-            $scope.goHome('testApp');
+            $scope.toHome('testApp');
             expect($location.path).toHaveBeenCalledWith('/notification/testApp');
             expect($route.reload).toHaveBeenCalled();
         });
@@ -668,7 +668,7 @@ describe('notificationCtr.js - Complete Test Suite', function() {
             expect($scope.loading).toBe(0);
         });
 
-        it('reportCtrl - should load readers report', function() {
+        it('reportCtr - should load readers report', function() {
             $rootScope.app = '12345';
             var ncList = {
                 NotificationId: '123',
@@ -679,7 +679,7 @@ describe('notificationCtr.js - Complete Test Suite', function() {
                     }
                 })
             };
-            var controller = $controller('reportCtrl', {
+            var controller = $controller('reportCtr', {
                 $scope: $scope,
                 ncList: ncList,
                 $rootScope: $rootScope,
@@ -876,7 +876,7 @@ describe('notificationCtr.js - Complete Test Suite', function() {
                     {date: '01/15/2024'},
                     {date: '01/16/2024'}
                 ])),
-                latestSchedulesStatus: jasmine.createSpy('latestSchedulesStatus').and.returnValue($q.resolve({
+                latestScheduleStatus: jasmine.createSpy('latestScheduleStatus').and.returnValue($q.resolve({
                     nextStarts: [],
                     schedulerStatus: 'RUNNING'
                 })),
@@ -2040,7 +2040,7 @@ describe('notificationCtr.js - Complete Test Suite', function() {
             expect($scope.emailHistory.length).toBe(0);
         });
 
-        it('should handle reportCtrl with complex reader data', function() {
+        it('should handle reportCtr with complex reader data', function() {
             $rootScope.app = '12345';
             var ncList = {
                 NotificationId: '123',
@@ -2055,7 +2055,7 @@ describe('notificationCtr.js - Complete Test Suite', function() {
                 })
             };
 
-            var controller = $controller('reportCtrl', {
+            var controller = $controller('reportCtr', {
                 $scope: $scope,
                 ncList: ncList,
                 $rootScope: $rootScope,
