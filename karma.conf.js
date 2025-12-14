@@ -8,25 +8,43 @@ module.exports = function (config) {
       'karma-coverage'
     ],
     files: [
-      // Include AngularJS and dependencies first
+      // Include jQuery FIRST - Angular will use it instead of jqLite
+      'node_modules/jquery/dist/jquery.js',
+      
+      // Include AngularJS and dependencies
       'node_modules/angular/angular.js',
       'node_modules/angular-route/angular-route.js',
+      'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
       'node_modules/angular-mocks/angular-mocks.js',
+
+      'node_modules/ng-ckeditor/dist/ng-ckeditor.js',
+      'node_modules/angucomplete-alt/angucomplete-alt.js',
+      'node_modules/html2canvas/dist/html2canvas.min.js',
       
       // Include your app files in the correct order
       'js/notificationCtr.js',   // Define the ncApp module first - MUST be first
       'js/services.js',          // All services
+      'js/file-upload.js',       // File upload directives
       'js/settingCtr.js',        // Controllers
+      'js/loginCtr.js',          // Login controller
+      'js/subscriptionCtr.js',    // Subscription controller
       
-      // Include test files
-      'spec/**/*.spec.js'
+      // Include test files in specific order to prevent injector conflicts
+      'spec/services/services.spec.js',         // Services first
+      'spec/directives/file-upload.spec.js',    // Directives second  
+      'spec/controllers/loginCtr.spec.js',      // Controllers last
+      'spec/controllers/settingCtr.spec.js',
+      'spec/controllers/notificationCtr.spec.js',
+      'spec/controllers/subscriptionCtr.spec.js',
+      'spec/directives/directive.spec.js'
     ],
     exclude: [
       'node_modules/**/test/**',
       'node_modules/**/tests/**'
     ],
     preprocessors: {
-      'js/**/*.js': ['coverage'],
+      // Measure coverage for controllers being tested
+      'js/*.js': ['coverage']
     },
     client: {
       clearContext: false,

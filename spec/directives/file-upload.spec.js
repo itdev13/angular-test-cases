@@ -1,5 +1,6 @@
 describe('File Upload Directives and Controllers', function() {
     var $rootScope, $scope, $controller, $compile, $window, $parse, fileUpload;
+    var originalJQuery, originalFileupload;
 
     // Load module FIRST before any inject or setup
     beforeEach(module('ncApp'));
@@ -19,8 +20,9 @@ describe('File Upload Directives and Controllers', function() {
             'application/pdf'
         ]);
 
-        // DO NOT replace jQuery - just add the fileupload plugin!
-        // Real jQuery is already loaded with all methods (.scrollTop, .height, .find, etc.)
+        // SAVE the original jQuery so we can restore it later
+        originalJQuery = window.$;
+        originalFileupload = window.$.fn.fileupload;
         
         if (!window.$ || !window.$.fn) {
             throw new Error('jQuery must be loaded before file-upload tests');
@@ -49,6 +51,16 @@ describe('File Upload Directives and Controllers', function() {
         // Ensure fileInput support is enabled
         window.$.support = window.$.support || {};
         window.$.support.fileInput = true;
+    });
+
+    // CRITICAL: Restore original jQuery after EACH test to prevent breaking other test files
+    afterEach(function() {
+        if (originalJQuery) {
+            window.$ = window.jQuery = originalJQuery;
+        }
+        if (originalFileupload) {
+            window.$.fn.fileupload = originalFileupload;
+        }
     });
 
     beforeEach(inject(function(_$rootScope_, _$controller_, _$compile_, _$window_, _$parse_) {

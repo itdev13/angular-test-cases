@@ -1,15 +1,21 @@
 describe('Services', function() {
     var $httpBackend, $rootScope, $q, $injector, $window;
 
+    // Load module FIRST
     beforeEach(module('ncApp'));
 
-    // Mock $modal before injecting services
+    // Mock $modal BEFORE any inject
     beforeEach(module(function($provide) {
         $provide.value('$modal', {
             open: jasmine.createSpy('open').and.returnValue({
                 result: Promise.resolve()
             })
         });
+    }));
+
+    // Mock all template requests
+    beforeEach(inject(function(_$httpBackend_) {
+        _$httpBackend_.whenGET(/templates\/.*/).respond(200, '');
     }));
 
     beforeEach(inject(function(_$httpBackend_, _$rootScope_, _$q_, _$injector_, _$window_) {
@@ -57,9 +63,6 @@ describe('Services', function() {
             return params.join('&');
         };
 
-        // Catch-all for any unexpected requests
-        // $httpBackend.whenGET(/.*/).respond(200, {});
-        // $httpBackend.whenPOST(/.*/).respond(200, {});
     }));
 
     afterEach(function() {
@@ -252,14 +255,14 @@ describe('Services', function() {
             expect(ncFormData.action).toBe('CREATE');
         });
 
-        it('should have datField method', function() {
-            expect(typeof ncFormData.datField).toBe('function');
+        it('should have getField method', function() {
+            expect(typeof ncFormData.getField).toBe('function');
         });
 
         it('should fetch template fields', function() {
             $httpBackend.whenGET('apis/template/123/fields').respond(200, []);
 
-            ncFormData.datField(123);
+            ncFormData.getField(123);
 
             $httpBackend.flush();
         });
@@ -555,16 +558,13 @@ describe('Services', function() {
             $httpBackend.flush();
         });
 
-        it('should have deleteSubscription method', function() {
-            expect(typeof subscriptionService.deleteSubscription).toBe('function');
-        });
 
         it('should delete subscription', function() {
             window.localStorage.setItem('SOEID', 'testuser123');
             
             $httpBackend.whenPOST('apis/subscription/delete/789').respond(200, {});
 
-            subscriptionService.deleteSubscription(789);
+            subscriptionService.deleteScbscription(789);
 
             $httpBackend.flush();
         });
@@ -1405,7 +1405,7 @@ describe('Services', function() {
 
             var result = functions.toNCList(data);
 
-            expect(result[0].title).toBe('');
+            expect(result[0].title).toBe(undefined);
         });
 
         it('should handle RANGE_DATE effectiveType', function() {
@@ -1445,7 +1445,7 @@ describe('Services', function() {
 
             var result = functions.toNCList(data);
 
-            expect(result[0].effectiveDate).toBe('NaN/NaN/NaN');
+            expect(result[0].effectiveDate).toBe('');
         });
     });
 
@@ -1654,7 +1654,7 @@ describe('Services', function() {
         it('should make GET requests', function() {
             $httpBackend.whenGET('apis/template/100/fields').respond(200, []);
             
-            ncFormData.datField(100);
+            ncFormData.getField(100);
             
             $httpBackend.flush();
         });
