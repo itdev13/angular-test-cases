@@ -3,6 +3,11 @@ describe('Directives Test Suite - Complete Coverage', function() {
 
   beforeEach(module('ncApp'));
 
+   // Mock all template requests
+   beforeEach(inject(function(_$httpBackend_) {
+    _$httpBackend_.whenGET(/templates\/.*/).respond(200, '');
+  }));
+  
   beforeEach(function() {
     // Mock Array prototypes
     Array.prototype.include = function(value) {
