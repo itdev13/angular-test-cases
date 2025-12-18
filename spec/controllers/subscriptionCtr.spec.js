@@ -3030,7 +3030,7 @@ describe('subFormCtr - Targeted Coverage', function() {
     expect($scope.saveDisable).toBe(false);
   });
 
-  // addd more tests for validateForm
+  // add more tests for validateForm
   it('should cover template type 6 validation - line 484', function() {
     var controller = $controller('subFormCtr', {
       $scope: $scope,
