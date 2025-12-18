@@ -3029,4 +3029,248 @@ describe('subFormCtr - Targeted Coverage', function() {
     
     expect($scope.saveDisable).toBe(false);
   });
+
+  // addd more tests for validateForm
+  it('should cover template type 6 validation - line 484', function() {
+    var controller = $controller('subFormCtr', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      subscriptionService: subscriptionService,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.$digest();
+    
+    $scope.data = {templateTypeId: 6, bcc: 'test@citi.com', description: 'Test'};
+    $scope.categoryValues = {
+      '102': [{categoryValueId: '1'}]
+    };
+    $scope.categories = {
+      '102': {categoryId: '102', categoryName: 'Hierarchy', hidden: false}
+    };
+    
+    var isValid = $scope.validateForm();
+    
+    expect(isValid).toBe(true);
+  });
+  
+  it('should cover childCategoryValue without all - line 290', function() {
+    ncFormData.getField.and.returnValue({
+      success: function(cb) {
+        cb([
+          {
+            categoryId: '102',
+            columnMapping: [
+              {categoryId: '101', categoryValueId: '1001'}
+              // No childCategoryValue property
+            ]
+          }
+        ]);
+        return this;
+      }
+    });
+    
+    baseService.categoryValuesByTemplate.and.returnValue($q.resolve([
+      {categoryId: '101', values: []},
+      {categoryId: '102', values: []}
+    ]));
+    
+    var controller = $controller('subFormCtr', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      subscriptionService: subscriptionService,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.getCategories(1);
+    $scope.$digest();
+    
+    // Verify relation was created with 'all' default
+    expect($scope.categoryRelationshipList.length).toBeGreaterThan(0);
+    if ($scope.categoryRelationshipList.length > 0) {
+      expect($scope.categoryRelationshipList[0].relation[0].childCategoryValueId).toContain('all');
+    }
+  });
+});
+
+// ===== DEEP NESTED LOGIC COVERAGE ATTEMPT =====
+describe('subFormCtr - Deep Nested CategoryChange Logic', function() {
+  var $controller, $scope, $rootScope, $q;
+  var subscriptionService, ncFormData, baseService, functions;
+  
+  beforeEach(module('ncApp'));
+  
+  beforeEach(inject(function(_$httpBackend_) {
+    _$httpBackend_.whenGET(/templates\/.*/).respond(200, '');
+  }));
+  
+  beforeEach(inject(function(_$controller_, _$rootScope_, _$q_) {
+    $controller = _$controller_;
+    $rootScope = _$rootScope_;
+    $scope = $rootScope.$new();
+    $q = _$q_;
+    
+    $rootScope.app = '12345'; // Non-SMC app
+    $scope.getCategories = jasmine.createSpy('getCategories');
+    
+    subscriptionService = {
+      action: 'CREATE',
+      templateTypeId: 10
+    };
+    
+    functions = {
+      alert: jasmine.createSpy('alert')
+    };
+  }));
+  
+  it('should execute line 393-394 - childCategoryValueId equals all', function() {
+    ncFormData = {
+      getField: jasmine.createSpy('getField').and.returnValue({
+        success: function(cb) {
+          cb([
+            {
+              categoryId: '200',
+              columnMapping: [
+                {categoryId: '199', categoryValueId: '1999', childCategoryValue: ['all']}
+              ]
+            }
+          ]);
+          return this;
+        }
+      })
+    };
+    
+    baseService = {
+      getTemplates: jasmine.createSpy('getTemplates').and.callFake(function(app, cb) {
+        cb([{templateTypeId: 10, templates: [{templateId: 10}]}]);
+      }),
+      categoryValuesByTemplate: jasmine.createSpy('categoryValuesByTemplate').and.returnValue($q.resolve([
+        {categoryId: '199', categoryName: 'Parent', values: [{categoryValueId: '1999', categoryValue: 'P1'}]},
+        {categoryId: '200', categoryName: 'Child', values: [{categoryValueId: '2000', categoryValue: 'C1'}]}
+      ]))
+    };
+    
+    var controller = $controller('subFormCtr', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      subscriptionService: subscriptionService,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    // Initialize categories using getCategories
+    $scope.getCategories(10);
+    $scope.$digest();
+    
+    // Now manually set categoryValues to trigger the logic
+    $scope.categoryValues['199'] = [{categoryValueId: '1999', categoryValue: 'P1'}];
+    
+    // Call categoryChange to execute lines 389, 393-394
+    $scope.categoryChange();
+    
+    expect($scope.saveDisable).toBe(false);
+  });
+  
+  it('should execute lines 396-399 - specific childCategoryValueId array', function() {
+    ncFormData = {
+      getField: jasmine.createSpy('getField').and.returnValue({
+        success: function(cb) {
+          cb([
+            {
+              categoryId: '200',
+              columnMapping: [
+                {categoryId: '199', categoryValueId: '1999', childCategoryValue: ['2001', '2002']}
+              ]
+            }
+          ]);
+          return this;
+        }
+      })
+    };
+    
+    baseService = {
+      getTemplates: jasmine.createSpy('getTemplates').and.callFake(function(app, cb) {
+        cb([{templateTypeId: 10, templates: [{templateId: 10}]}]);
+      }),
+      categoryValuesByTemplate: jasmine.createSpy('categoryValuesByTemplate').and.returnValue($q.resolve([
+        {categoryId: '199', categoryName: 'Parent', values: [{categoryValueId: '1999'}]},
+        {categoryId: '200', categoryName: 'Child', values: [
+          {categoryValueId: '2001', categoryValue: 'C1'},
+          {categoryValueId: '2002', categoryValue: 'C2'},
+          {categoryValueId: '2003', categoryValue: 'C3'}
+        ]}
+      ]))
+    };
+    
+    var controller = $controller('subFormCtr', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      subscriptionService: subscriptionService,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.getCategories(10);
+    $scope.$digest();
+    
+    // Set parent category value
+    $scope.categoryValues['199'] = [{categoryValueId: '1999'}];
+    
+    // Execute categoryChange
+    $scope.categoryChange();
+    
+    expect($scope.saveDisable).toBe(false);
+  });
+  
+  it('should execute line 412 - assign values when categoryValueList not empty', function() {
+    ncFormData = {
+      getField: jasmine.createSpy('getField').and.returnValue({
+        success: function(cb) {
+          cb([
+            {
+              categoryId: '200',
+              columnMapping: [
+                {categoryId: '199', categoryValueId: '1999', childCategoryValue: ['2001']}
+              ]
+            }
+          ]);
+          return this;
+        }
+      })
+    };
+    
+    baseService = {
+      getTemplates: jasmine.createSpy('getTemplates').and.callFake(function(app, cb) {
+        cb([{templateTypeId: 10, templates: [{templateId: 10}]}]);
+      }),
+      categoryValuesByTemplate: jasmine.createSpy('categoryValuesByTemplate').and.returnValue($q.resolve([
+        {categoryId: '199', values: [{categoryValueId: '1999'}]},
+        {categoryId: '200', values: [{categoryValueId: '2001', categoryValue: 'C1'}]}
+      ]))
+    };
+    
+    var controller = $controller('subFormCtr', {
+      $scope: $scope,
+      $rootScope: $rootScope,
+      subscriptionService: subscriptionService,
+      ncFormData: ncFormData,
+      baseService: baseService,
+      functions: functions
+    });
+    
+    $scope.getCategories(10);
+    $scope.$digest();
+    
+    $scope.categoryValues['199'] = [{categoryValueId: '1999'}];
+    
+    $scope.categoryChange();
+    
+    expect($scope.saveDisable).toBe(false);
+  });
 });
